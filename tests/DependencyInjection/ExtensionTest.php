@@ -17,11 +17,10 @@ final class ExtensionTest extends TestCase
     public function it_valid_register()
     {
         $config = [
-            'history_file' => sys_get_temp_dir(). '/psysh_history',
+            'history_file' => sys_get_temp_dir() . '/psysh_history',
         ];
 
         $container = $this->container($config);
-        $container->compile();
 
         self::assertTrue($container->has('psysh.shell'));
         self::assertInstanceOf(Shell::class, $container->get('psysh.shell'));

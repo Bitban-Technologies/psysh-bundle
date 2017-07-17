@@ -23,22 +23,20 @@ class Extension extends ConfigurableExtension
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
+        $this->registerShell($mergedConfig, $container);
+        $this->registerCommand($container);
+    }
+
+    private function registerShell(array $config, ContainerBuilder $container): void
+    {
         $configId = 'psysh.config';
-        $container->setDefinition($configId, $this->configDefinition($mergedConfig));
+        $container->setDefinition($configId, $this->configDefinition($config));
 
         $definition = (new Definition(Shell::class))
-            ->setShared(false)
+            ->setPublic(false)
             ->addArgument(new Reference($configId));
 
         $container->setDefinition('psysh.shell', $definition);
-
-        $container->register('psysh.command.shell_command', ShellCommand::class)
-            ->setPublic(false)
-            ->addArgument(new Reference('psysh.shell'))
-            ->setAutoconfigured(true);
-
-        $container->registerForAutoconfiguration(Command::class)
-            ->addTag('psysh.command');
     }
 
     private function configDefinition(array $config): Definition
@@ -53,5 +51,16 @@ class Extension extends ConfigurableExtension
         }
 
         return $definition;
+    }
+
+    private function registerCommand(ContainerBuilder $container): void
+    {
+        $container->registerForAutoconfiguration(Command::class)
+            ->addTag('psysh.command');
+
+        $container->register('psysh.command.shell_command', ShellCommand::class)
+            ->setPublic(false)
+            ->addArgument(new Reference('psysh.shell'))
+            ->setAutoconfigured(true);
     }
 }
