@@ -17,6 +17,9 @@ final class ExtensionTest extends TestCase
     public function it_valid_register()
     {
         $config = [
+            'variables' => [
+                'container' => '@service_container',
+            ],
             'history_file' => sys_get_temp_dir() . '/psysh_history',
         ];
 
@@ -24,6 +27,10 @@ final class ExtensionTest extends TestCase
 
         self::assertTrue($container->has('psysh.shell'));
         self::assertInstanceOf(Shell::class, $container->get('psysh.shell'));
+        self::assertArraySubset(
+            array_keys($config['variables']),
+            $container->get('psysh.shell')->getScopeVariableNames()
+        );
     }
 
     private function container(array $config = []): ContainerBuilder

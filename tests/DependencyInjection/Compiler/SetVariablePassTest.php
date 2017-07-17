@@ -55,6 +55,27 @@ final class SetVariablePassTest extends TestCase
         );
     }
 
+    /** @test */
+    public function it_valid_processed_if_already_has_variables()
+    {
+        $variables = ['container' => 'service_container'];
+
+        $container = $this->container();
+        $container->getDefinition('psysh.shell')
+            ->addMethodCall('setScopeVariables', [$variables]);
+
+        $container->register('service', stdClass::class)
+            ->addTag('psysh.variable', ['name' => 'test']);
+
+        $container->compile();
+
+        // scope variables are not overwritten
+        self::assertContains(
+            key($variables),
+            $container->get('psysh.shell')->getScopeVariableNames()
+        );
+    }
+
     private function container(): ContainerBuilder
     {
         $container = new ContainerBuilder();

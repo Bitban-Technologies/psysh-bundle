@@ -25,8 +25,38 @@ class SetVariablePass implements CompilerPassInterface
             return;
         }
 
-        $container->getDefinition('psysh.shell')
-            ->addMethodCall('setScopeVariables', [$this->scopeVariables($services)]);
+        $this->registerScopeVariables($services, $container);
+    }
+
+    private function registerScopeVariables(array $services, ContainerBuilder $container): void
+    {
+        $definition = $container->getDefinition('psysh.shell');
+
+        if ($definition->hasMethodCall('setScopeVariables')) {
+            $calls = $this->mergeScopeVariables(
+                $definition->getMethodCalls(),
+                $this->scopeVariables($services)
+            );
+            $definition->setMethodCalls($calls);
+        } else {
+            $definition->addMethodCall('setScopeVariables', [$this->scopeVariables($services)]);
+        }
+    }
+
+    private function mergeScopeVariables(array $calls, array $variables): array
+    {
+        foreach ($calls as $i => [$method, $args]) {
+            if ('setScopeVariables' === $method) {
+                foreach ($args as $arg) {
+                    $variables += $arg;
+                }
+                unset($calls[$i]);
+            }
+        }
+
+        return $calls + [
+            ['setScopeVariables', [$variables]],
+        ];
     }
 
     private function scopeVariables(array $services): array

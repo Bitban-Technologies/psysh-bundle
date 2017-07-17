@@ -36,6 +36,15 @@ class Extension extends ConfigurableExtension
             ->setPublic(false)
             ->addArgument(new Reference($configId));
 
+        if (isset($config['variables'])) {
+            foreach ($config['variables'] as &$spec) {
+                if (\is_string($spec) && '@' === $spec[0]) {
+                    $spec = new Reference(\substr($spec, 1));
+                }
+            }
+            $definition->addMethodCall('setScopeVariables', [$config['variables']]);
+        }
+
         $container->setDefinition('psysh.shell', $definition);
     }
 
