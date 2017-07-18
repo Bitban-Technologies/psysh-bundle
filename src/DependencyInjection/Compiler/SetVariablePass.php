@@ -61,9 +61,11 @@ class SetVariablePass implements CompilerPassInterface
 
     private function scopeVariables(array $services): array
     {
-        // NameSpace\SomeName -> nameSpaceSomename
+        // NameSpace\SomeName -> nameSpaceSomeName
         $classify = static function (string $spec): string {
-            return \str_replace('\\', '', \lcfirst(\ucwords(\strtolower($spec), '\\')));
+            $parts = \explode('\\', $spec);
+            empty($parts[1]) ?: $parts[0] = \strtolower($parts[0]);
+            return \implode($parts);
         };
 
         $scopeVariables = [];

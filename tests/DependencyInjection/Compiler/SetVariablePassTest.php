@@ -15,8 +15,8 @@ final class SetVariablePassTest extends TestCase
     {
         return [
             ['test',          stdClass::class, 'test'],
-            [stdClass::class, stdClass::class, 'stdclass'],
-            [TestCase::class, stdClass::class, 'phpunitFrameworkTestcase'],
+            [stdClass::class, stdClass::class, 'stdClass'],
+            [TestCase::class, stdClass::class, 'phpunitFrameworkTestCase'],
         ];
     }
 
