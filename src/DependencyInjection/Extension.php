@@ -37,12 +37,9 @@ class Extension extends ConfigurableExtension
             ->addArgument(new Reference($configId));
 
         if (isset($config['variables'])) {
-            foreach ($config['variables'] as &$spec) {
-                if (\is_string($spec) && '@' === $spec[0]) {
-                    $spec = new Reference(\substr($spec, 1));
-                }
-            }
-            $definition->addMethodCall('setScopeVariables', [$config['variables']]);
+            $definition->addMethodCall('setScopeVariables', [
+                $this->scopeVariables($config['variables']),
+            ]);
         }
 
         $container->setDefinition('psysh.shell', $definition);
@@ -60,6 +57,17 @@ class Extension extends ConfigurableExtension
         }
 
         return $definition;
+    }
+
+    private function scopeVariables(array $variables): array
+    {
+        foreach ($variables as &$spec) {
+            if (\is_string($spec) && '@' === $spec[0]) {
+                $spec = new Reference(\substr($spec, 1));
+            }
+        }
+
+        return $variables;
     }
 
     private function registerCommand(ContainerBuilder $container): void
