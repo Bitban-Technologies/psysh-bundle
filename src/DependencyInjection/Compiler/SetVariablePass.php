@@ -45,10 +45,10 @@ class SetVariablePass implements CompilerPassInterface
 
     private function mergeScopeVariables(array $calls, array $variables): array
     {
-        foreach ($calls as $i => [$method, $args]) {
+        foreach ($calls as $i => [$method, $arguments]) {
             if ('setScopeVariables' === $method) {
-                foreach ($args as $arg) {
-                    $variables += $arg;
+                foreach ($arguments as $argument) {
+                    $variables += $argument;
                 }
                 unset($calls[$i]);
             }
@@ -67,9 +67,8 @@ class SetVariablePass implements CompilerPassInterface
         };
 
         $scopeVariables = [];
-        foreach ($services as $id => $attributes) {
-            $variable = $attributes[0]['name']
-                ?? (\class_exists($id) ? $classify($id) : $id);
+        foreach ($services as $id => [$variable]) {
+            $variable = $variable['name'] ?? (\class_exists($id) ? $classify($id) : $id);
             $scopeVariables[$variable] = new Reference($id);
         }
 
