@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\{
     Reference
 };
 
-class AddCommandPass implements CompilerPassInterface
+class AddTabCompletionMatcherPass implements CompilerPassInterface
 {
     /**
      * @inheritDoc
@@ -20,22 +20,22 @@ class AddCommandPass implements CompilerPassInterface
             return;
         }
 
-        $services = $container->findTaggedServiceIds('psysh.command', true);
+        $services = $container->findTaggedServiceIds('psysh.matcher', true);
         if (empty($services)) {
             return;
         }
 
         $container->getDefinition('psysh.config')
-            ->addMethodCall('addCommands', [$this->commands($services)]);
+            ->addMethodCall('addTabCompletionMatchers', [$this->matchers($services)]);
     }
 
-    private function commands(array $services): array
+    private function matchers(array $services): array
     {
-        $commands = [];
+        $matchers = [];
         foreach (\array_keys($services) as $id) {
-            $commands[] = new Reference($id);
+            $matchers[] = new Reference($id);
         }
 
-        return $commands;
+        return $matchers;
     }
 }

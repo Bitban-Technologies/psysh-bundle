@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->append($this->addVariablesNode())
+                ->append($this->addArrayNode('commands'))
                 ->append($this->addErrorLoggingLevelNode())
                 ->scalarNode('config_dir')->end()
                 ->scalarNode('data_dir')->end()
@@ -35,6 +36,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('history_file')->end()
                 ->scalarNode('manual_db_file')->end()
                 ->booleanNode('tab_completion')->end()
+                ->append($this->addArrayNode('tab_completion_matchers'))
                 ->scalarNode('startup_message')->end()
                 ->booleanNode('require_semicolons')->end()
                 ->booleanNode('erase_duplicates')->end()
@@ -54,6 +56,35 @@ class Configuration implements ConfigurationInterface
         $this->normalizeRootNode($rootNode);
 
         return $treeBuilder;
+    }
+
+    private function normalizeRootNode(ArrayNodeDefinition $rootNode): void
+    {
+        $normalizer = static function (array $config): array {
+            static $keys = [
+                'pcntl'    => 'usePcntl',
+                'readline' => 'useReadline',
+                'unicode'  => 'useUnicode',
+            ];
+
+            // config_dir -> configDir
+            $camelize = static function (string $value): string {
+                return \str_replace('_', '', \lcfirst(\ucwords(\strtolower($value), '_')));
+            };
+
+            $normalized = [];
+            foreach ($config as $key => $value) {
+                if (empty($value)) {
+                    continue;
+                }
+                $key = $keys[$key] ?? $camelize($key);
+                $normalized[$key] = $value;
+            }
+
+            return $normalized;
+        };
+
+        $rootNode->validate()->always()->then($normalizer)->end();
     }
 
     private function addVariablesNode(): ArrayNodeDefinition
@@ -114,32 +145,21 @@ class Configuration implements ConfigurationInterface
         return $node;
     }
 
-    private function normalizeRootNode(ArrayNodeDefinition $rootNode): void
+    private function addArrayNode(string $name): ArrayNodeDefinition
     {
-        $normalizer = static function (array $config): array {
-            static $keys = [
-                'pcntl'    => 'usePcntl',
-                'readline' => 'useReadline',
-                'unicode'  => 'useUnicode',
-            ];
+        $node = new ArrayNodeDefinition($name);
+        $node
+            ->normalizeKeys(false)
+            ->useAttributeAsKey('name')
+            ->beforeNormalization()
+                ->ifString()
+                ->then(static function ($v) {
+                    return \preg_split('/\s*,\s*/', $v, -1, \PREG_SPLIT_NO_EMPTY);
+                })
+            ->end()
+            ->prototype('scalar')->end()
+        ;
 
-            // config_dir -> configDir
-            $camelize = static function (string $value): string {
-                return \str_replace('_', '', \lcfirst(\ucwords(\strtolower($value), '_')));
-            };
-
-            $normalized = [];
-            foreach ($config as $key => $value) {
-                if (empty($value)) {
-                    continue;
-                }
-                $key = $keys[$key] ?? $camelize($key);
-                $normalized[$key] = $value;
-            }
-
-            return $normalized;
-        };
-
-        $rootNode->validate()->always()->then($normalizer)->end();
+        return $node;
     }
 }

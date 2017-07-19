@@ -21,6 +21,10 @@ final class ExtensionTest extends TestCase
                 'container' => '@service_container',
             ],
             'history_file' => sys_get_temp_dir() . '/psysh_history',
+            'tab_completion_matchers' => [
+                'Psy\TabCompletion\Matcher\MongoClientMatcher',
+                'Psy\TabCompletion\Matcher\MongoDatabaseMatcher',
+            ],
         ];
 
         $container = $this->container($config);

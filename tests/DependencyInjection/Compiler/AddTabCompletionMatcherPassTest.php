@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace AlexMasterov\PsyshBundle\Tests\DependencyInjection\Compiler;
 
-use AlexMasterov\PsyshBundle\DependencyInjection\Compiler\AddCommandPass;
-use AlexMasterov\PsyshBundle\Tests\DependencyInjection\Compiler\TestCommand;
+use AlexMasterov\PsyshBundle\DependencyInjection\Compiler\AddTabCompletionMatcherPass;
 use PHPUnit\Framework\TestCase;
+use Psy\TabCompletion\Matcher\{
+    AbstractMatcher,
+    MongoClientMatcher
+};
 use Psy\{
-    Command\Command,
     Configuration,
     Shell
 };
@@ -16,7 +18,7 @@ use Symfony\Component\DependencyInjection\{
     Reference
 };
 
-final class AddCommandPassTest extends TestCase
+final class AddTabCompletionMatcherPassTest extends TestCase
 {
     /**
      * @test
@@ -24,14 +26,14 @@ final class AddCommandPassTest extends TestCase
     public function it_valid_processed()
     {
         $container = $this->container();
-        $container->register(TestCommand::class)
+        $container->register(MongoClientMatcher::class)
             ->setAutoconfigured(true);
 
         $container->compile();
 
-        self::assertInstanceOf(
-            TestCommand::class,
-            $container->get('psysh.shell')->find('test')
+        self::assertContainsOnlyInstancesOf(
+            MongoClientMatcher::class,
+            $container->get('psysh.config')->getTabCompletionMatchers()
         );
     }
 
@@ -42,9 +44,9 @@ final class AddCommandPassTest extends TestCase
         $container->register('psysh.shell', Shell::class)
             ->addArgument(new Reference('psysh.config'));
 
-        $container->addCompilerPass(new AddCommandPass());
-        $container->registerForAutoconfiguration(Command::class)
-            ->addTag('psysh.command');
+        $container->addCompilerPass(new AddTabCompletionMatcherPass());
+        $container->registerForAutoconfiguration(AbstractMatcher::class)
+            ->addTag('psysh.matcher');
 
         return $container;
     }
