@@ -25,17 +25,12 @@ class AddTabCompletionMatcherPass implements CompilerPassInterface
             return;
         }
 
+        $matchers = \array_map(
+            static function ($id) { return new Reference($id); },
+            \array_keys($services)
+        );
+
         $container->getDefinition('psysh.config')
-            ->addMethodCall('addTabCompletionMatchers', [$this->matchers($services)]);
-    }
-
-    private function matchers(array $services): array
-    {
-        $matchers = [];
-        foreach (\array_keys($services) as $id) {
-            $matchers[] = new Reference($id);
-        }
-
-        return $matchers;
+            ->addMethodCall('addTabCompletionMatchers', [$matchers]);
     }
 }

@@ -25,17 +25,12 @@ class AddCommandPass implements CompilerPassInterface
             return;
         }
 
+        $commands = \array_map(
+            static function ($id) { return new Reference($id); },
+            \array_keys($services)
+        );
+
         $container->getDefinition('psysh.config')
-            ->addMethodCall('addCommands', [$this->commands($services)]);
-    }
-
-    private function commands(array $services): array
-    {
-        $commands = [];
-        foreach (\array_keys($services) as $id) {
-            $commands[] = new Reference($id);
-        }
-
-        return $commands;
+            ->addMethodCall('addCommands', [$commands]);
     }
 }
