@@ -22,7 +22,7 @@ final class ConfigurationTest extends TestCase
             'commands' => [
                 'Psy\Command\WtfCommand',
             ],
-            'error_logging_level'     => 'parse, NOTICE',
+            'error_logging_level'     => 'PARSE, NOTICE',
             'config_dir'              => '/config',
             'data_dir'                => '/data',
             'runtime_dir'             => '/tmp',

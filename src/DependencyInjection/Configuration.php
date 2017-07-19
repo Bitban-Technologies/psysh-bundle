@@ -118,25 +118,20 @@ class Configuration implements ConfigurationInterface
             ->prototype('scalar')->end()
             ->validate()
                 ->always()
-                ->then(static function ($errors) {
-                    static $level = null;
-                    static $missingErrors = [];
-                    foreach (\array_unique($errors) as $error) {
-                        $constant = \strtoupper("E_{$error}");
-                        if (\defined($constant)) {
-                            $level |= \constant($constant);
-                        } else {
-                            $missingErrors[] = $constant;
-                        }
-                    }
+                ->then(static function ($methods) {
+                    $invalidMethods = \array_filter($methods, static function ($method) {
+                        return false === \defined("E_{$method}");
+                    });
 
-                    if (empty($missingErrors)) {
-                        return $level;
+                    if (empty($invalidMethods)) {
+                        return \array_reduce($methods, static function ($level, $method) {
+                            return $level |= \constant("E_{$method}");
+                        });
                     }
 
                     throw new InvalidConfigurationException(\sprintf(
                         'The errors are not supported: "%s".',
-                        \implode('", "', $missingErrors)
+                        \implode('", "', $invalidMethods)
                     ));
                 })
             ->end()
