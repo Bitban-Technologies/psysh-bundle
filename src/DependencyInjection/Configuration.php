@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->append($this->addVariablesNode())
                 ->append($this->addArrayNode('commands'))
+                ->append($this->addArrayNode('default_includes'))
                 ->append($this->addErrorLoggingLevelNode())
                 ->scalarNode('config_dir')->end()
                 ->scalarNode('data_dir')->end()

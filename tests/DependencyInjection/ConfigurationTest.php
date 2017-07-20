@@ -22,6 +22,9 @@ final class ConfigurationTest extends TestCase
             'commands' => [
                 'Psy\Command\WtfCommand',
             ],
+            'default_includes' => [
+                '/include/bootstrap.php',
+            ],
             'error_logging_level'     => 'PARSE, NOTICE',
             'config_dir'              => '/config',
             'data_dir'                => '/data',
@@ -51,6 +54,9 @@ final class ConfigurationTest extends TestCase
             ],
             'commands' => [
                 0 => 'Psy\Command\WtfCommand',
+            ],
+            'defaultIncludes' => [
+                0 => '/include/bootstrap.php',
             ],
             'configDir'             => '/config',
             'dataDir'               => '/data',
