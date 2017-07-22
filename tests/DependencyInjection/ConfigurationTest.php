@@ -19,9 +19,7 @@ final class ConfigurationTest extends TestCase
                 'container' => '@service_container',
                 '@service_container',
             ],
-            'commands' => [
-                'Psy\Command\WtfCommand',
-            ],
+            'commands' => 'Psy\Command\WtfCommand',
             'default_includes' => [
                 '/include/bootstrap.php',
             ],
@@ -50,13 +48,13 @@ final class ConfigurationTest extends TestCase
         $normalized = [
             'variables' => [
                 'container' => '@service_container',
-                0 => '@service_container',
+                '@service_container',
             ],
             'commands' => [
-                0 => 'Psy\Command\WtfCommand',
+                'Psy\Command\WtfCommand',
             ],
             'defaultIncludes' => [
-                0 => '/include/bootstrap.php',
+                '/include/bootstrap.php',
             ],
             'configDir'             => '/config',
             'dataDir'               => '/data',
@@ -66,8 +64,8 @@ final class ConfigurationTest extends TestCase
             'manualDbFile'          => '/manual.sqlite',
             'tabCompletion'         => true,
             'tabCompletionMatchers' => [
-               0 => 'Psy\TabCompletion\Matcher\MongoClientMatcher',
-               1 => 'Psy\TabCompletion\Matcher\MongoDatabaseMatcher',
+                'Psy\TabCompletion\Matcher\MongoClientMatcher',
+                'Psy\TabCompletion\Matcher\MongoDatabaseMatcher',
             ],
             'startupMessage'        => '/hello',
             'requireSemicolons'     => true,

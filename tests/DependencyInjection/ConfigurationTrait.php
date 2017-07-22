@@ -8,7 +8,7 @@ use Symfony\Component\Config\Definition\Processor;
 
 trait ConfigurationTrait
 {
-    protected static function processConfiguration(array $config = []): array
+    private static function processConfiguration(array $config = []): array
     {
         $configuration = new Configuration();
         $config = ['psysh' => $config];
