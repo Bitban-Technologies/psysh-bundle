@@ -31,18 +31,21 @@ final class ShellCommandTest extends TestCase
         $input = self::createMock(InputInterface::class);
         $output = self::createMock(OutputInterface::class);
 
+        // Execute
         $getExecuteMethod = function () use ($input, $output) {
             return $this->execute($input, $output);
         };
 
+        $code = $getExecuteMethod->call($this->command());
+
         // Verify
-        self::assertNull($getExecuteMethod->call($this->command()));
+        self::assertSame(0, $code);
     }
 
     private function command(): ShellCommand
     {
         $shell = self::createMock(Shell::class);
-        $shell->expects(self::any())->method('run');
+        $shell->expects(self::any())->method('run')->willReturn(0);
 
         return new ShellCommand($shell);
     }

@@ -37,7 +37,7 @@ class ShellCommand extends Command
         InputInterface $input,
         OutputInterface $output
     ) {
-        $this->shell->run();
+        return $this->shell->run();
     }
 
     /**
