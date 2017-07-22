@@ -11,6 +11,27 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class SetVariablePassTest extends TestCase
 {
+    /** @test */
+    public function it_valid_processed_when_no_shell()
+    {
+        $container = $this->container();
+        $container->removeDefinition('psysh.shell');
+
+        // Execute
+        $container->compile();
+
+        // Verify
+        self::assertFalse($this->hasSetScopeVariablesCall($container));
+
+        $container = $this->container();
+
+        // Execute
+        $container->compile();
+
+        // Verify
+        self::assertFalse($this->hasSetScopeVariablesCall($container));
+    }
+
     public function scopeVariables(): array
     {
         return [
@@ -24,14 +45,16 @@ final class SetVariablePassTest extends TestCase
      * @test
      * @dataProvider scopeVariables
      */
-    public function it_valid_processed($name, $class, $expected)
+    public function it_valid_processed_when_tagged($name, $class, $expected)
     {
         $container = $this->container();
         $container->register($name, $class)
             ->addTag('psysh.variable', []);
 
+        // Execute
         $container->compile();
 
+        // Verify
         self::assertContains(
             $expected,
             $container->get('psysh.shell')->getScopeVariableNames()
@@ -39,7 +62,7 @@ final class SetVariablePassTest extends TestCase
     }
 
     /** @test */
-    public function it_valid_processed_with_attribute()
+    public function it_valid_processed_when_tagged_with_attribute()
     {
         $abttributeName = 'test';
 
@@ -47,8 +70,10 @@ final class SetVariablePassTest extends TestCase
         $container->register('service', stdClass::class)
             ->addTag('psysh.variable', ['name' => $abttributeName]);
 
+        // Execute
         $container->compile();
 
+        // Verify
         self::assertContains(
             $abttributeName,
             $container->get('psysh.shell')->getScopeVariableNames()
@@ -56,7 +81,7 @@ final class SetVariablePassTest extends TestCase
     }
 
     /** @test */
-    public function it_valid_processed_if_already_has_variables()
+    public function it_valid_processed_when_tagged_already_has_variables()
     {
         $variables = ['container' => 'service_container'];
 
@@ -67,21 +92,27 @@ final class SetVariablePassTest extends TestCase
         $container->register('service', stdClass::class)
             ->addTag('psysh.variable', ['name' => 'test']);
 
+        // Execute
         $container->compile();
 
-        // scope variables are not overwritten
+        // Verify
         self::assertContains(
             key($variables),
             $container->get('psysh.shell')->getScopeVariableNames()
         );
     }
 
+    private function hasSetScopeVariablesCall(ContainerBuilder $container): bool
+    {
+        return $container->hasDefinition('psysh.shell')
+            && $container->getDefinition('psysh.shell')->hasMethodCall('setScopeVariables');
+    }
+
     private function container(): ContainerBuilder
     {
         $container = new ContainerBuilder();
-        $container->register('psysh.shell', Shell::class);
-
         $container->addCompilerPass(new SetVariablePass());
+        $container->register('psysh.shell', Shell::class);
 
         return $container;
     }
