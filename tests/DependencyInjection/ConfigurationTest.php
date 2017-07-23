@@ -3,17 +3,19 @@ declare(strict_types=1);
 
 namespace AlexMasterov\PsyshBundle\Tests\DependencyInjection;
 
-use AlexMasterov\PsyshBundle\Tests\DependencyInjection\ConfigurationTrait;
+use AlexMasterov\PsyshBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\Config\Definition\{
+    Exception\InvalidConfigurationException,
+    Processor
+};
 
 final class ConfigurationTest extends TestCase
 {
-    use ConfigurationTrait;
-
     /** @test */
     public function it_valid_processed()
     {
+        // Stub
         $config = [
             'variables'     => [
                 'container' => '@service_container',
@@ -79,25 +81,33 @@ final class ConfigurationTest extends TestCase
             'updateCheck'           => 'never',
         ];
 
-        self::assertProcessedConfigurationEquals($normalized, $config);
+        // Execute
+        $actual = $this->processConfiguration($config);
+
+        // Verify
+        self::assertEquals($normalized, $actual);
     }
 
     /** @test */
     public function it_throw_exception_on_invalid_error_logging_level()
     {
-        $this->expectException(InvalidConfigurationException::class);
-
+        // Stub
         $config = [
             'error_logging_level' => 'invalid_level',
         ];
 
-        self::assertProcessedConfigurationEquals([], $config);
+        // Verify
+        $this->expectException(InvalidConfigurationException::class);
+
+        // Execute
+        $this->processConfiguration($config);
     }
 
-    private static function assertProcessedConfigurationEquals($expected, $config): void
+    private function processConfiguration(array $config = []): array
     {
-        $actual = self::processConfiguration($config);
+        $configuration = new Configuration();
+        $config = ['psysh' => $config];
 
-        self::assertEquals($expected, $actual);
+        return (new Processor)->processConfiguration($configuration, $config);
     }
 }

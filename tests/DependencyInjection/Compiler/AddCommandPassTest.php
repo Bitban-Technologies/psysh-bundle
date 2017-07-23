@@ -4,33 +4,33 @@ declare(strict_types=1);
 namespace AlexMasterov\PsyshBundle\Tests\DependencyInjection\Compiler;
 
 use AlexMasterov\PsyshBundle\DependencyInjection\Compiler\AddCommandPass;
-use AlexMasterov\PsyshBundle\Tests\DependencyInjection\Compiler\TestCommand;
+use AlexMasterov\PsyshBundle\Tests\DependencyInjection\CanContainer;
 use PHPUnit\Framework\TestCase;
-use Psy\{
-    Command\Command,
-    Configuration,
-    Shell
-};
-use Symfony\Component\DependencyInjection\{
-    ContainerBuilder,
-    Reference
-};
+use stdClass;
 
 final class AddCommandPassTest extends TestCase
 {
+    use CanContainer;
+
     /** @test */
-    public function it_valid_processed_then_no_shell()
+    public function it_valid_processed_when_no_shell()
     {
-        $container = $this->container();
-        $container->removeDefinition('psysh.shell');
+        // Stub
+        $container = $this->getContainer();
 
         // Execute
         $container->compile();
 
         // Verify
         self::assertFalse($this->hasAddCommandsCall($container));
+    }
 
-        $container = $this->container();
+    /** @test */
+    public function it_valid_processed_when_no_tags()
+    {
+        // Stub
+        $container = $this->getContainer();
+        $container->register('psysh.shell', stdClass::class);
 
         // Execute
         $container->compile();
@@ -42,37 +42,45 @@ final class AddCommandPassTest extends TestCase
     /** @test */
     public function it_valid_processed_when_tagged()
     {
-        $container = $this->container();
-        $container->register(TestCommand::class)
-            ->setAutoconfigured(true);
+        // Stub
+        $command = 'test_command';
+
+        $container = $this->getContainer();
+        $container->register('psysh.shell', stdClass::class);
+        $container->register('psysh.config', stdClass::class);
+        $container->register('test_command', stdClass::class)
+            ->addTag('psysh.command');
 
         // Execute
         $container->compile();
 
         // Verify
         self::assertTrue($this->hasAddCommandsCall($container));
-        self::assertInstanceOf(
-            TestCommand::class,
-            $container->get('psysh.shell')->find('test')
-        );
+        self::assertContains($command, $this->getCommands($container));
     }
 
-    private function hasAddCommandsCall(ContainerBuilder $container): bool
+    private function getContainer()
     {
-        return $container->getDefinition('psysh.config')
-            ->hasMethodCall('addCommands');
-    }
-
-    private function container(): ContainerBuilder
-    {
-        $container = new ContainerBuilder();
+        $container = $this->container();
         $container->addCompilerPass(new AddCommandPass());
-        $container->register('psysh.config', Configuration::class);
-        $container->register('psysh.shell', Shell::class)
-            ->addArgument(new Reference('psysh.config'));
-        $container->registerForAutoconfiguration(Command::class)
-            ->addTag('psysh.command');
 
         return $container;
+    }
+
+    private function hasAddCommandsCall($container): bool
+    {
+        return $this->hasDefinitionMethodCall('psysh.config', 'addCommands', $container);
+    }
+
+    private function getCommands($container): array
+    {
+        $commands = $this->getDefinitionMethodArguments('psysh.config', 'addCommands', $container);
+
+        return array_map(
+            static function ($command) {
+                return (string) $command;
+            },
+            $commands
+        );
     }
 }

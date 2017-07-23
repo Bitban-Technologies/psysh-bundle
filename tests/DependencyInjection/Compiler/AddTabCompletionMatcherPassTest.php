@@ -4,35 +4,33 @@ declare(strict_types=1);
 namespace AlexMasterov\PsyshBundle\Tests\DependencyInjection\Compiler;
 
 use AlexMasterov\PsyshBundle\DependencyInjection\Compiler\AddTabCompletionMatcherPass;
+use AlexMasterov\PsyshBundle\Tests\DependencyInjection\CanContainer;
 use PHPUnit\Framework\TestCase;
-use Psy\TabCompletion\Matcher\{
-    AbstractMatcher,
-    MongoClientMatcher
-};
-use Psy\{
-    Configuration,
-    Shell
-};
-use Symfony\Component\DependencyInjection\{
-    ContainerBuilder,
-    Reference
-};
+use stdClass;
 
 final class AddTabCompletionMatcherPassTest extends TestCase
 {
+    use CanContainer;
+
     /** @test */
     public function it_valid_processed_when_no_shell()
     {
-        $container = $this->container();
-        $container->removeDefinition('psysh.shell');
+        // Stub
+        $container = $this->getContainer();
 
         // Execute
         $container->compile();
 
         // Verify
         self::assertFalse($this->hasAddTabCompletionMatchersCall($container));
+    }
 
-        $container = $this->container();
+    /** @test */
+    public function it_valid_processed_when_no_tags()
+    {
+        // Stub
+        $container = $this->getContainer();
+        $container->register('psysh.shell', stdClass::class);
 
         // Execute
         $container->compile();
@@ -44,37 +42,43 @@ final class AddTabCompletionMatcherPassTest extends TestCase
     /** @test */
     public function it_valid_processed_when_tagged()
     {
-        $container = $this->container();
-        $container->register(MongoClientMatcher::class)
-            ->setAutoconfigured(true);
+        // Stub
+        $matcher = 'test_matcher';
+
+        $container = $this->getContainer();
+        $container->register('psysh.shell', stdClass::class);
+        $container->register('psysh.config', stdClass::class);
+        $container->register($matcher, stdClass::class)
+            ->addTag('psysh.matcher');
 
         // Execute
         $container->compile();
 
         // Verify
         self::assertTrue($this->hasAddTabCompletionMatchersCall($container));
-        self::assertContainsOnlyInstancesOf(
-            MongoClientMatcher::class,
-            $container->get('psysh.config')->getTabCompletionMatchers()
-        );
+        self::assertContains($matcher, $this->getMatchers($container));
     }
 
-    private function hasAddTabCompletionMatchersCall(ContainerBuilder $container): bool
+    private function getContainer()
     {
-        return $container->getDefinition('psysh.config')
-            ->hasMethodCall('addTabCompletionMatchers');
-    }
-
-    private function container(): ContainerBuilder
-    {
-        $container = new ContainerBuilder();
+        $container = $this->container();
         $container->addCompilerPass(new AddTabCompletionMatcherPass());
-        $container->register('psysh.config', Configuration::class);
-        $container->register('psysh.shell', Shell::class)
-            ->addArgument(new Reference('psysh.config'));
-        $container->registerForAutoconfiguration(AbstractMatcher::class)
-            ->addTag('psysh.matcher');
 
         return $container;
+    }
+
+    private function hasAddTabCompletionMatchersCall($container): bool
+    {
+        return $this->hasDefinitionMethodCall('psysh.config', 'addTabCompletionMatchers', $container);
+    }
+
+    private function getMatchers($container): array
+    {
+        $matchers = $this->getDefinitionMethodArguments('psysh.config', 'addTabCompletionMatchers', $container);
+
+        return array_map(
+            static function ($matcher) { return (string) $matcher; },
+            $matchers
+        );
     }
 }

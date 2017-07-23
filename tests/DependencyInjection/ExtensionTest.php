@@ -3,19 +3,21 @@ declare(strict_types=1);
 
 namespace AlexMasterov\PsyshBundle\Tests\DependencyInjection;
 
-use AlexMasterov\PsyshBundle\PsyshBundle;
 use AlexMasterov\PsyshBundle\Tests\DependencyInjection\ConfigurationTrait;
+use AlexMasterov\PsyshBundle\{
+    DependencyInjection\Extension,
+    PsyshBundle
+};
 use PHPUnit\Framework\TestCase;
 use Psy\Shell;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class ExtensionTest extends TestCase
 {
-    use ConfigurationTrait;
-
     /** @test */
     public function it_valid_register()
     {
+        // Stub
         $config = [
             'variables' => [
                 'container' => '@service_container',
@@ -27,8 +29,10 @@ final class ExtensionTest extends TestCase
             ],
         ];
 
-        $container = $this->container($config);
+        // Execute
+        $container = $this->loadExtension($config);
 
+        // Verify
         self::assertTrue($container->has('psysh.shell'));
         self::assertInstanceOf(Shell::class, $container->get('psysh.shell'));
         self::assertArraySubset(
@@ -37,21 +41,18 @@ final class ExtensionTest extends TestCase
         );
     }
 
-    private function container(array $config = []): ContainerBuilder
+    private function loadExtension(array $config = [], ContainerBuilder $container = null): ContainerBuilder
     {
-        $container = new ContainerBuilder();
+        $container ?? $container = new ContainerBuilder();
 
         // Apply compiler passes
         $bundle = new PsyshBundle();
         $bundle->build($container);
 
-        $config = $this->processConfiguration($config);
+        $extenstion = $bundle->getContainerExtension();
 
-        $getLoadInternal = function () use ($config, $container) {
-            return $this->loadInternal($config, $container);
-        };
-
-        $getLoadInternal->call($bundle->getContainerExtension());
+        $config = ['psysh' => $config];
+        $extenstion->load($config, $container);
 
         return $container;
     }

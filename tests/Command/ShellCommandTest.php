@@ -16,7 +16,8 @@ final class ShellCommandTest extends TestCase
     /** @test */
     public function it_valid_configure()
     {
-        $command = $this->command();
+        // Stub
+        $command = $this->getCommand();
 
         // Verify
         self::assertSame('psysh:shell', $command->getName());
@@ -27,26 +28,33 @@ final class ShellCommandTest extends TestCase
     /** @test */
     public function it_valid_execute()
     {
-        // Mock
-        $input = self::createMock(InputInterface::class);
-        $output = self::createMock(OutputInterface::class);
+        // Stub
+        $command = $this->getCommand();
 
         // Execute
-        $getExecuteMethod = function () use ($input, $output) {
-            return $this->execute($input, $output);
-        };
-
-        $code = $getExecuteMethod->call($this->command());
+        $code = $this->executeCommand($command);
 
         // Verify
         self::assertSame(0, $code);
     }
 
-    private function command(): ShellCommand
+    private function getCommand(): ShellCommand
     {
         $shell = self::createMock(Shell::class);
         $shell->expects(self::any())->method('run')->willReturn(0);
 
         return new ShellCommand($shell);
+    }
+
+    private function executeCommand($command): ?int
+    {
+        $input = self::createMock(InputInterface::class);
+        $output = self::createMock(OutputInterface::class);
+
+        $getExecuteMethod = function () use ($input, $output) {
+            return $this->execute($input, $output);
+        };
+
+        return $getExecuteMethod->call($command);
     }
 }

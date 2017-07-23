@@ -4,26 +4,33 @@ declare(strict_types=1);
 namespace AlexMasterov\PsyshBundle\Tests\DependencyInjection\Compiler;
 
 use AlexMasterov\PsyshBundle\DependencyInjection\Compiler\SetVariablePass;
+use AlexMasterov\PsyshBundle\Tests\DependencyInjection\CanContainer;
 use PHPUnit\Framework\TestCase;
-use Psy\Shell;
 use stdClass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class SetVariablePassTest extends TestCase
 {
+    use CanContainer;
+
     /** @test */
     public function it_valid_processed_when_no_shell()
     {
-        $container = $this->container();
-        $container->removeDefinition('psysh.shell');
+        // Stub
+        $container = $this->getContainer();
 
         // Execute
         $container->compile();
 
         // Verify
         self::assertFalse($this->hasSetScopeVariablesCall($container));
+    }
 
-        $container = $this->container();
+    /** @test */
+    public function it_valid_processed_when_no_tags()
+    {
+        // Stub
+        $container = $this->getContainer();
+        $container->register('psysh.shell', stdClass::class);
 
         // Execute
         $container->compile();
@@ -47,73 +54,76 @@ final class SetVariablePassTest extends TestCase
      */
     public function it_valid_processed_when_tagged($name, $class, $expected)
     {
-        $container = $this->container();
+        // Stub
+        $container = $this->getContainer();
+        $container->register('psysh.shell', stdClass::class);
         $container->register($name, $class)
-            ->addTag('psysh.variable', []);
+            ->addTag('psysh.variable');
 
         // Execute
         $container->compile();
 
         // Verify
-        self::assertContains(
-            $expected,
-            $container->get('psysh.shell')->getScopeVariableNames()
-        );
+        self::assertTrue($this->hasSetScopeVariablesCall($container));
+        self::assertArrayHasKey($expected, $this->getScopeVariables($container));
     }
 
     /** @test */
     public function it_valid_processed_when_tagged_with_attribute()
     {
+        // Stub
         $abttributeName = 'test';
 
-        $container = $this->container();
-        $container->register('service', stdClass::class)
+        $container = $this->getContainer();
+        $container->register('psysh.shell', stdClass::class);
+        $container->register('test_service', stdClass::class)
             ->addTag('psysh.variable', ['name' => $abttributeName]);
 
         // Execute
         $container->compile();
 
         // Verify
-        self::assertContains(
-            $abttributeName,
-            $container->get('psysh.shell')->getScopeVariableNames()
-        );
+        self::assertTrue($this->hasSetScopeVariablesCall($container));
+        self::assertArrayHasKey($abttributeName, $this->getScopeVariables($container));
     }
 
     /** @test */
-    public function it_valid_processed_when_tagged_already_has_variables()
+    public function it_valid_processed_when_tagged_and_already_has_variables()
     {
-        $variables = ['container' => 'service_container'];
+        // Stub
+        $variable = 'container';
+        $abttributeName = 'test';
 
-        $container = $this->container();
-        $container->getDefinition('psysh.shell')
-            ->addMethodCall('setScopeVariables', [$variables]);
-
-        $container->register('service', stdClass::class)
-            ->addTag('psysh.variable', ['name' => 'test']);
+        $container = $this->getContainer();
+        $container->register('psysh.shell', stdClass::class)
+            ->addMethodCall('setScopeVariables', [[$variable => stdClass::class]]);
+        $container->register('test_service', stdClass::class)
+            ->addTag('psysh.variable', ['name' => $abttributeName]);
 
         // Execute
         $container->compile();
 
         // Verify
-        self::assertContains(
-            key($variables),
-            $container->get('psysh.shell')->getScopeVariableNames()
-        );
+        $variables = $this->getScopeVariables($container);
+        self::assertArrayHasKey($variable, $variables);
+        self::assertArrayHasKey($abttributeName, $variables);
     }
 
-    private function hasSetScopeVariablesCall(ContainerBuilder $container): bool
+    private function getContainer()
     {
-        return $container->hasDefinition('psysh.shell')
-            && $container->getDefinition('psysh.shell')->hasMethodCall('setScopeVariables');
-    }
-
-    private function container(): ContainerBuilder
-    {
-        $container = new ContainerBuilder();
+        $container = $this->container();
         $container->addCompilerPass(new SetVariablePass());
-        $container->register('psysh.shell', Shell::class);
 
         return $container;
+    }
+
+    private function hasSetScopeVariablesCall($container): bool
+    {
+        return $this->hasDefinitionMethodCall('psysh.shell', 'setScopeVariables', $container);
+    }
+
+    private function getScopeVariables($container): array
+    {
+        return $this->getDefinitionMethodArguments('psysh.shell', 'setScopeVariables', $container);
     }
 }
