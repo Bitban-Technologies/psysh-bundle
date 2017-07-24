@@ -9,6 +9,7 @@ use AlexMasterov\PsyshBundle\DependencyInjection\{
     Compiler\SetVariablePass,
     Extension
 };
+use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -31,6 +32,15 @@ class PsyshBundle extends Bundle
      */
     public function getContainerExtension()
     {
-        return new Extension();
+        return $this->extension
+            ?? $this->extension = new Extension();
+    }
+
+    /**
+     * @inheritDoc
+     * @codeCoverageIgnore
+     */
+    public function registerCommands(Application $application)
+    {
     }
 }
