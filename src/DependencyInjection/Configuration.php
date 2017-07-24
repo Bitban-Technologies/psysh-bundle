@@ -52,16 +52,17 @@ class Configuration implements ConfigurationInterface
                     ->values(['never', 'always', 'daily', 'weekly', 'monthly'])
                 ->end()
             ->end()
-        ;
-
-        $this->normalizeRootNode($rootNode);
+            ->validate()
+                ->always()
+                ->then($this->normalizer())
+            ->end();
 
         return $treeBuilder;
     }
 
-    private function normalizeRootNode(ArrayNodeDefinition $rootNode): void
+    private function normalizer(): callable
     {
-        $normalizer = static function (array $config): array {
+        return static function (array $config): array {
             static $keys = [
                 'pcntl'    => 'usePcntl',
                 'readline' => 'useReadline',
@@ -84,17 +85,12 @@ class Configuration implements ConfigurationInterface
 
             return $normalized;
         };
-
-        $rootNode->validate()->always()->then($normalizer)->end();
     }
 
     private function addVariablesNode(): ArrayNodeDefinition
     {
-        $node = new ArrayNodeDefinition('variables');
+        $node = $this->addArrayNode('variables');
         $node
-            ->normalizeKeys(false)
-            ->useAttributeAsKey('name')
-            ->prototype('variable')->end()
             ->validate()
                 ->always()
                 ->then(static function ($variables) {
@@ -108,15 +104,8 @@ class Configuration implements ConfigurationInterface
 
     private function addErrorLoggingLevelNode(): ArrayNodeDefinition
     {
-        $node = new ArrayNodeDefinition('error_logging_level');
+        $node = $this->addArrayNode('error_logging_level');
         $node
-            ->beforeNormalization()
-                ->ifString()
-                ->then(static function ($v) {
-                    return \preg_split('/\s*,\s*/', $v, -1, \PREG_SPLIT_NO_EMPTY);
-                })
-            ->end()
-            ->prototype('scalar')->end()
             ->validate()
                 ->always()
                 ->then(static function ($methods) {
