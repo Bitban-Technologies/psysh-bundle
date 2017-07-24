@@ -21,6 +21,15 @@ class Extension extends ConfigurableExtension
 {
     /**
      * @inheritDoc
+     * @codeCoverageIgnore
+     */
+    public function getAlias()
+    {
+        return 'psysh';
+    }
+
+    /**
+     * @inheritDoc
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
