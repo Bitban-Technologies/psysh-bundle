@@ -77,7 +77,7 @@ final class SetVariablePassTest extends TestCase
         $container = $this->getContainer();
         $container->register('psysh.shell', stdClass::class);
         $container->register('test_service', stdClass::class)
-            ->addTag('psysh.variable', ['name' => $abttributeName]);
+            ->addTag('psysh.variable', ['var' => $abttributeName]);
 
         // Execute
         $container->compile();

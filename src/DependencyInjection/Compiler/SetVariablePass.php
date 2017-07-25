@@ -69,8 +69,8 @@ class SetVariablePass implements CompilerPassInterface
         };
 
         $scopeVariables = [];
-        foreach ($services as $id => [$variable]) {
-            $variable = $variable['name'] ?? (\class_exists($id) ? $classify($id) : $id);
+        foreach ($services as $id => [$attributes]) {
+            $variable = $attributes['var'] ?? (\class_exists($id) ? $classify($id) : $id);
             $scopeVariables[$variable] = new Reference($id);
         }
 
