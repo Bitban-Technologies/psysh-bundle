@@ -22,35 +22,36 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->append($this->addVariablesNode())
-                ->append($this->addArrayNode('commands'))
-                ->append($this->addArrayNode('default_includes'))
-                ->append($this->addErrorLoggingLevelNode())
-                ->scalarNode('config_dir')->end()
-                ->scalarNode('data_dir')->end()
-                ->scalarNode('runtime_dir')
-                    ->info('Set the shell\'s temporary directory location')
-                ->end()
-                ->integerNode('history_size')
-                    ->info('If set to zero (0), the history size is unlimited')
-                ->end()
-                ->scalarNode('history_file')->end()
-                ->scalarNode('manual_db_file')->end()
-                ->booleanNode('tab_completion')->end()
-                ->append($this->addArrayNode('tab_completion_matchers'))
-                ->scalarNode('startup_message')->end()
-                ->booleanNode('require_semicolons')->end()
-                ->booleanNode('erase_duplicates')->end()
-                ->booleanNode('pcntl')->end()
-                ->booleanNode('readline')->end()
-                ->booleanNode('unicode')->end()
                 ->enumNode('color_mode')
                     ->values(['auto', 'forced', 'disabled'])
                 ->end()
+                ->scalarNode('config_dir')->end()
+                ->append($this->addArrayNode('commands'))
+                ->scalarNode('data_dir')->end()
+                ->append($this->addArrayNode('default_includes'))
+                ->booleanNode('erase_duplicates')->end()
+                ->append($this->addErrorLoggingLevelNode())
+                ->scalarNode('history_file')->end()
+                ->integerNode('history_size')
+                    ->info('If set to zero (0), the history size is unlimited')
+                ->end()
+                ->scalarNode('manual_db_file')->end()
                 ->scalarNode('pager')->treatNullLike('less')->end()
+                ->booleanNode('require_semicolons')->end()
+                ->scalarNode('runtime_dir')
+                    ->info('Set the shell\'s temporary directory location')
+                ->end()
+                ->scalarNode('startup_message')->end()
+                ->booleanNode('tab_completion')->end()
+                ->append($this->addArrayNode('tab_completion_matchers'))
                 ->enumNode('update_check')->defaultValue('never')
                     ->values(['never', 'always', 'daily', 'weekly', 'monthly'])
                 ->end()
+                ->booleanNode('bracketed_paste')->end()
+                ->booleanNode('pcntl')->end()
+                ->booleanNode('readline')->end()
+                ->append($this->addVariablesNode())
+                ->booleanNode('unicode')->end()
             ->end()
             ->validate()
                 ->always()
@@ -64,9 +65,10 @@ class Configuration implements ConfigurationInterface
     {
         return static function (array $config): array {
             static $keys = [
-                'pcntl'    => 'usePcntl',
-                'readline' => 'useReadline',
-                'unicode'  => 'useUnicode',
+                'bracketed_paste' => 'useBracketedPaste',
+                'pcntl'           => 'usePcntl',
+                'readline'        => 'useReadline',
+                'unicode'         => 'useUnicode',
             ];
 
             // config_dir -> configDir

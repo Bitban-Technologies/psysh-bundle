@@ -45,6 +45,7 @@ final class ConfigurationTest extends TestCase
             'unicode'                 => true,
             'color_mode'              => 'forced',
             'pager'                   => null,
+            'bracketed_paste'         => true,
         ];
 
         $normalized = [
@@ -79,6 +80,7 @@ final class ConfigurationTest extends TestCase
             'errorLoggingLevel'     => E_PARSE | E_NOTICE,
             'pager'                 => 'less',
             'updateCheck'           => 'never',
+            'useBracketedPaste'     => true,
         ];
 
         // Execute
