@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\{
 class AddTabCompletionMatcherPass implements CompilerPassInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {

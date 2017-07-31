@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\{
 class SetVariablePass implements CompilerPassInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {

@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 class Extension extends ConfigurableExtension
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      * @codeCoverageIgnore
      */
     public function getAlias()
@@ -29,7 +29,7 @@ class Extension extends ConfigurableExtension
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
