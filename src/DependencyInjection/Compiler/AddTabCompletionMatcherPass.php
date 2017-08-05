@@ -16,19 +16,19 @@ class AddTabCompletionMatcherPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (false === $container->has('psysh.shell')) {
+        if (!$container->has('psysh.shell')) {
             return;
         }
 
-        $services = $container->findTaggedServiceIds('psysh.matcher', true);
-        if (empty($services)) {
-            return;
+        $matchers = [];
+
+        foreach ($container->findTaggedServiceIds('psysh.matcher', true) as $id => $tags) {
+            $matchers[] = new Reference($id);
         }
 
-        $matchers = \array_map(
-            static function ($id) { return new Reference($id); },
-            \array_keys($services)
-        );
+        if (empty($matchers)) {
+            return;
+        }
 
         $container->getDefinition('psysh.config')
             ->addMethodCall('addTabCompletionMatchers', [$matchers]);

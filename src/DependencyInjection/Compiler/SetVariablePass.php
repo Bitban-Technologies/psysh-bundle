@@ -6,74 +6,75 @@ namespace AlexMasterov\PsyshBundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\{
     Compiler\CompilerPassInterface,
     ContainerBuilder,
+    Definition,
     Reference
 };
 
 class SetVariablePass implements CompilerPassInterface
 {
+    /** @const */
+    const METHOD = 'setScopeVariables';
+
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        if (false === $container->has('psysh.shell')) {
+        if (!$container->has('psysh.shell')) {
             return;
         }
 
-        $services = $container->findTaggedServiceIds('psysh.variable', true);
-        if (empty($services)) {
+        $variables = [];
+
+        foreach ($container->findTaggedServiceIds('psysh.variable', true) as $id => [$attributes]) {
+            $variable = $attributes['var'] ?? (\class_exists($id) ? $this->classify($id) : $id);
+            $variables[$variable] = new Reference($id);
+        }
+
+        if (empty($variables)) {
             return;
         }
 
-        $this->registerScopeVariables($services, $container);
-    }
-
-    private function registerScopeVariables(array $services, ContainerBuilder $container): void
-    {
         $definition = $container->getDefinition('psysh.shell');
 
-        if ($definition->hasMethodCall('setScopeVariables')) {
-            $calls = $this->mergeScopeVariables(
-                $definition->getMethodCalls(),
-                $this->scopeVariables($services)
-            );
-            $definition->setMethodCalls($calls);
-        } else {
-            $definition->addMethodCall('setScopeVariables', [$this->scopeVariables($services)]);
+        if ($definition->hasMethodCall(self::METHOD)) {
+            $this->mergeMethodCall($definition, $variables);
+
+            return;
         }
+
+        $definition->addMethodCall(self::METHOD, [$variables]);
     }
 
-    private function mergeScopeVariables(array $calls, array $variables): array
+    // NameSpace\SomeName -> nameSpaceSomeName
+    private function classify(string $spec): string
     {
-        foreach ($calls as $i => [$method, $arguments]) {
-            if ('setScopeVariables' === $method) {
+        $parts = \explode('\\', $spec);
+
+        if (!empty($parts[1])) {
+            $parts[0] = \strtolower($parts[0]);
+        }
+
+        return \implode($parts);
+    }
+
+    private function mergeMethodCall(Definition $definition, array $variables): void
+    {
+        $calls = $definition->getMethodCalls();
+
+        foreach ($calls as $call => [$method, $arguments]) {
+            if (self::METHOD === $method) {
                 foreach ($arguments as $argument) {
                     $variables += $argument;
                 }
-                unset($calls[$i]);
+                unset($calls[$call]);
             }
         }
 
-        return $calls + [
-            ['setScopeVariables', [$variables]],
+        $calls += [
+            [self::METHOD, [$variables]],
         ];
-    }
 
-    private function scopeVariables(array $services): array
-    {
-        // NameSpace\SomeName -> nameSpaceSomeName
-        $classify = static function (string $spec): string {
-            $parts = \explode('\\', $spec);
-            empty($parts[1]) ?: $parts[0] = \strtolower($parts[0]);
-            return \implode($parts);
-        };
-
-        $scopeVariables = [];
-        foreach ($services as $id => [$attributes]) {
-            $variable = $attributes['var'] ?? (\class_exists($id) ? $classify($id) : $id);
-            $scopeVariables[$variable] = new Reference($id);
-        }
-
-        return $scopeVariables;
+        $definition->setMethodCalls($calls);
     }
 }

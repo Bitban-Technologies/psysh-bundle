@@ -16,19 +16,19 @@ class AddCommandPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (false === $container->has('psysh.shell')) {
+        if (!$container->has('psysh.shell')) {
             return;
         }
 
-        $services = $container->findTaggedServiceIds('psysh.command', true);
-        if (empty($services)) {
-            return;
+        $commands = [];
+
+        foreach ($container->findTaggedServiceIds('psysh.command', true) as $id => $tags) {
+            $commands[] = new Reference($id);
         }
 
-        $commands = \array_map(
-            static function ($id) { return new Reference($id); },
-            \array_keys($services)
-        );
+        if (empty($commands)) {
+            return;
+        }
 
         $container->getDefinition('psysh.config')
             ->addMethodCall('addCommands', [$commands]);
