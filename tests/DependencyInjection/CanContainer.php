@@ -28,7 +28,7 @@ trait CanContainer
     ): array {
         $calls = $container->getDefinition($definition)->getMethodCalls();
 
-        static $arguments = [];
+        $arguments = [];
         foreach ($calls as $i => [$name, $args]) {
             if ($name === $method) {
                 foreach ($args as $arg) {

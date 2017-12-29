@@ -54,7 +54,6 @@ class Extension extends ConfigurableExtension
     private function registerCommands(ContainerBuilder $container): void
     {
         $container->register('psysh.command.shell_command', ShellCommand::class)
-            ->setPublic(false)
             ->addArgument(new Reference('psysh.shell'))
             ->setAutoconfigured(true);
     }
@@ -65,7 +64,6 @@ class Extension extends ConfigurableExtension
 
         $definition = (new Definition(Configuration::class))
             ->setShared(false)
-            ->setPublic(false)
             ->addArgument($config);
 
         if (isset($config['historyFile'])) {
@@ -97,7 +95,6 @@ class Extension extends ConfigurableExtension
     private function registerShell(array $config, ContainerBuilder $container): void
     {
         $definition = (new Definition(Shell::class))
-            ->setPublic(false)
             ->addArgument(new Reference('psysh.config'));
 
         if (isset($config['variables'])) {

@@ -12,6 +12,11 @@ use Symfony\Component\Console\{
 
 class ShellCommand extends Command
 {
+    /**
+     * @var Shell
+     */
+    private $shell;
+
     public function __construct(Shell $shell)
     {
         parent::__construct();
@@ -39,9 +44,4 @@ class ShellCommand extends Command
     ) {
         return $this->shell->run();
     }
-
-    /**
-     * @var Shell
-     */
-    private $shell;
 }

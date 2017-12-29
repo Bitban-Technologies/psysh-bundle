@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 final class ExtensionTest extends TestCase
 {
     /** @test */
-    public function it_valid_register()
+    public function it_valid_register(): void
     {
         // Stub
         $config = [

@@ -13,7 +13,7 @@ final class AddCommandPassTest extends TestCase
     use CanContainer;
 
     /** @test */
-    public function it_valid_processed_when_no_shell()
+    public function it_valid_processed_when_no_shell(): void
     {
         // Stub
         $container = $this->getContainer();
@@ -26,11 +26,11 @@ final class AddCommandPassTest extends TestCase
     }
 
     /** @test */
-    public function it_valid_processed_when_no_tags()
+    public function it_valid_processed_when_no_tags(): void
     {
         // Stub
         $container = $this->getContainer();
-        $container->register('psysh.shell', stdClass::class);
+        $container->register('psysh.shell', stdClass::class)->setPublic(true);
 
         // Execute
         $container->compile();
@@ -40,15 +40,15 @@ final class AddCommandPassTest extends TestCase
     }
 
     /** @test */
-    public function it_valid_processed_when_tagged()
+    public function it_valid_processed_when_tagged(): void
     {
         // Stub
         $command = 'test_command';
 
         $container = $this->getContainer();
-        $container->register('psysh.shell', stdClass::class);
-        $container->register('psysh.config', stdClass::class);
-        $container->register('test_command', stdClass::class)
+        $container->register('psysh.shell', stdClass::class)->setPublic(true);
+        $container->register('psysh.config', stdClass::class)->setPublic(true);
+        $container->register('test_command', stdClass::class)->setPublic(true)
             ->addTag('psysh.command');
 
         // Execute

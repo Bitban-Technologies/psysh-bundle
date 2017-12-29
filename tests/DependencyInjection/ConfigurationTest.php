@@ -13,7 +13,7 @@ use Symfony\Component\Config\Definition\{
 final class ConfigurationTest extends TestCase
 {
     /** @test */
-    public function it_valid_processed()
+    public function it_valid_processed(): void
     {
         // Stub
         $config = [
@@ -91,7 +91,7 @@ final class ConfigurationTest extends TestCase
     }
 
     /** @test */
-    public function it_throw_exception_on_invalid_error_logging_level()
+    public function it_throw_exception_on_invalid_error_logging_level(): void
     {
         // Stub
         $config = [

@@ -14,7 +14,7 @@ use Symfony\Component\Console\{
 final class ShellCommandTest extends TestCase
 {
     /** @test */
-    public function it_valid_configure()
+    public function it_valid_configure(): void
     {
         // Stub
         $command = $this->getCommand();
@@ -26,7 +26,7 @@ final class ShellCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_valid_execute()
+    public function it_valid_execute(): void
     {
         // Stub
         $command = $this->getCommand();
@@ -51,10 +51,10 @@ final class ShellCommandTest extends TestCase
         $input = self::createMock(InputInterface::class);
         $output = self::createMock(OutputInterface::class);
 
-        $getExecuteMethod = function () use ($input, $output) {
+        $executeMethod = function () use ($input, $output) {
             return $this->execute($input, $output);
         };
 
-        return $getExecuteMethod->call($command);
+        return $executeMethod->call($command);
     }
 }

@@ -13,7 +13,7 @@ final class SetVariablePassTest extends TestCase
     use CanContainer;
 
     /** @test */
-    public function it_valid_processed_when_no_shell()
+    public function it_valid_processed_when_no_shell(): void
     {
         // Stub
         $container = $this->getContainer();
@@ -26,7 +26,7 @@ final class SetVariablePassTest extends TestCase
     }
 
     /** @test */
-    public function it_valid_processed_when_no_tags()
+    public function it_valid_processed_when_no_tags(): void
     {
         // Stub
         $container = $this->getContainer();
@@ -39,25 +39,25 @@ final class SetVariablePassTest extends TestCase
         self::assertFalse($this->hasSetScopeVariablesCall($container));
     }
 
-    public function scopeVariables(): array
+    public function scopeVariables(): iterable
     {
-        return [
-            ['test',          stdClass::class, 'test'],
-            [stdClass::class, stdClass::class, 'stdClass'],
-            [TestCase::class, stdClass::class, 'phpunitFrameworkTestCase'],
-        ];
+        // name, class, expected
+        yield ['test',          stdClass::class, 'test'];
+        yield [stdClass::class, stdClass::class, 'stdClass'];
+        yield [TestCase::class, stdClass::class, 'phpunitFrameworkTestCase'];
     }
 
     /**
      * @test
      * @dataProvider scopeVariables
      */
-    public function it_valid_processed_when_tagged($name, $class, $expected)
+    public function it_valid_processed_when_tagged($name, $class, $expected): void
     {
         // Stub
         $container = $this->getContainer();
-        $container->register('psysh.shell', stdClass::class);
+        $container->register('psysh.shell', stdClass::class)->setPublic(true);
         $container->register($name, $class)
+            ->setPublic(true)
             ->addTag('psysh.variable');
 
         // Execute
@@ -69,15 +69,16 @@ final class SetVariablePassTest extends TestCase
     }
 
     /** @test */
-    public function it_valid_processed_when_tagged_with_attribute()
+    public function it_valid_processed_when_tagged_with_attribute(): void
     {
         // Stub
         $abttributeName = 'test';
 
         $container = $this->getContainer();
-        $container->register('psysh.shell', stdClass::class);
+        $container->register('psysh.shell', stdClass::class)->setPublic(true);
         $container->register('test_service', stdClass::class)
-            ->addTag('psysh.variable', ['var' => $abttributeName]);
+            ->setPublic(true)
+            ->addTag('psysh.variable', ['name' => $abttributeName]);
 
         // Execute
         $container->compile();
@@ -88,7 +89,7 @@ final class SetVariablePassTest extends TestCase
     }
 
     /** @test */
-    public function it_valid_processed_when_tagged_and_already_has_variables()
+    public function it_valid_processed_when_tagged_and_already_has_variables(): void
     {
         // Stub
         $variable = 'container';
@@ -96,8 +97,11 @@ final class SetVariablePassTest extends TestCase
 
         $container = $this->getContainer();
         $container->register('psysh.shell', stdClass::class)
+            ->setPublic(true)
             ->addMethodCall('setScopeVariables', [[$variable => stdClass::class]]);
+
         $container->register('test_service', stdClass::class)
+            ->setPublic(true)
             ->addTag('psysh.variable', ['name' => $abttributeName]);
 
         // Execute
@@ -105,6 +109,7 @@ final class SetVariablePassTest extends TestCase
 
         // Verify
         $variables = $this->getScopeVariables($container);
+
         self::assertArrayHasKey($variable, $variables);
         self::assertArrayHasKey($abttributeName, $variables);
     }
