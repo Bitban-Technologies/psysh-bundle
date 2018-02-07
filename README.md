@@ -17,16 +17,13 @@ The suggested installation method is via [composer](https://getcomposer.org/):
 $ composer require alexmasterov/psysh-bundle
 ```
 
-Add the bundle in your application kernel:
+Add the bundle in your config:
 ```php
-// AppKernel.php
-public function registerBundles()
-{
-    return [
-        // ...
-        new AlexMasterov\PsyshBundle\PsyshBundle(),
-    ];
-}
+// config/bundles.php
+return [
+    // ...
+    AlexMasterov\PsyshBundle\PsyshBundle::class => ['dev' => true],
+];
 ```
 
 ## Usage
