@@ -78,7 +78,7 @@ final class SetVariablePassTest extends TestCase
         $container->register('psysh.shell', stdClass::class)->setPublic(true);
         $container->register('test_service', stdClass::class)
             ->setPublic(true)
-            ->addTag('psysh.variable', ['name' => $abttributeName]);
+            ->addTag('psysh.variable', ['var' => $abttributeName]);
 
         // Execute
         $container->compile();
@@ -102,7 +102,7 @@ final class SetVariablePassTest extends TestCase
 
         $container->register('test_service', stdClass::class)
             ->setPublic(true)
-            ->addTag('psysh.variable', ['name' => $abttributeName]);
+            ->addTag('psysh.variable', ['var' => $abttributeName]);
 
         // Execute
         $container->compile();

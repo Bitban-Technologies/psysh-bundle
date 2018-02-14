@@ -27,7 +27,7 @@ class SetVariablePass implements CompilerPassInterface
         $variables = [];
 
         foreach ($container->findTaggedServiceIds('psysh.variable', true) as $id => [$attributes]) {
-            $variable = $attributes['name'] ?? (\class_exists($id) ? $this->classify($id) : $id);
+            $variable = $attributes['var'] ?? (\class_exists($id) ? $this->classify($id) : $id);
             $variables[$variable] = new Reference($id);
         }
 
