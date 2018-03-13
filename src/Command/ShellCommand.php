@@ -12,9 +12,7 @@ use Symfony\Component\Console\{
 
 class ShellCommand extends Command
 {
-    /**
-     * @var Shell
-     */
+    /** @var Shell */
     private $shell;
 
     public function __construct(Shell $shell)
@@ -24,9 +22,7 @@ class ShellCommand extends Command
         $this->shell = $shell;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function configure()
     {
         $this
@@ -35,9 +31,7 @@ class ShellCommand extends Command
             ->setDescription('Run Psy Shell');
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function execute(
         InputInterface $input,
         OutputInterface $output

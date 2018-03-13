@@ -9,15 +9,17 @@ use Symfony\Component\DependencyInjection\{
     Definition,
     Reference
 };
+use function class_exists;
+use function explode;
+use function implode;
+use function strtolower;
 
 class SetVariablePass implements CompilerPassInterface
 {
     /** @const string */
     const METHOD = 'setScopeVariables';
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function process(ContainerBuilder $container)
     {
         if (!$container->has('psysh.shell')) {
@@ -27,7 +29,7 @@ class SetVariablePass implements CompilerPassInterface
         $variables = [];
 
         foreach ($container->findTaggedServiceIds('psysh.variable', true) as $id => [$attributes]) {
-            $variable = $attributes['var'] ?? (\class_exists($id) ? $this->classify($id) : $id);
+            $variable = $attributes['var'] ?? (class_exists($id) ? $this->classify($id) : $id);
             $variables[$variable] = new Reference($id);
         }
 
@@ -39,7 +41,6 @@ class SetVariablePass implements CompilerPassInterface
 
         if ($definition->hasMethodCall(self::METHOD)) {
             $this->mergeMethodCall($definition, $variables);
-
             return;
         }
 
@@ -49,13 +50,13 @@ class SetVariablePass implements CompilerPassInterface
     // NameSpace\SomeName -> nameSpaceSomeName
     private function classify(string $spec): string
     {
-        $parts = \explode('\\', $spec);
+        $parts = explode('\\', $spec);
 
         if (!empty($parts[1])) {
-            $parts[0] = \strtolower($parts[0]);
+            $parts[0] = strtolower($parts[0]);
         }
 
-        return \implode($parts);
+        return implode($parts);
     }
 
     private function mergeMethodCall(Definition $definition, array $variables): void

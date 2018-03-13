@@ -9,12 +9,16 @@ use Symfony\Component\Config\Definition\{
     ConfigurationInterface,
     Exception\InvalidConfigurationException
 };
+use function array_filter;
+use function lcfirst;
+use function preg_split;
+use function str_replace;
+use function strtolower;
+use function ucwords;
 
 class Configuration implements ConfigurationInterface
 {
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
@@ -73,7 +77,7 @@ class Configuration implements ConfigurationInterface
 
             // config_dir -> configDir
             $camelize = static function (string $value): string {
-                return \str_replace('_', '', \lcfirst(\ucwords(\strtolower($value), '_')));
+                return str_replace('_', '', lcfirst(ucwords(strtolower($value), '_')));
             };
 
             $normalized = [];
@@ -96,7 +100,7 @@ class Configuration implements ConfigurationInterface
             ->validate()
                 ->always()
                 ->then(static function ($variables) {
-                    return \array_filter($variables, 'is_string');
+                    return array_filter($variables, 'is_string');
                 })
             ->end()
         ;
@@ -141,7 +145,7 @@ class Configuration implements ConfigurationInterface
             ->beforeNormalization()
                 ->ifString()
                 ->then(static function ($v) {
-                    return \preg_split('/\s*,\s*/', $v, -1, \PREG_SPLIT_NO_EMPTY);
+                    return preg_split('/\s*,\s*/', $v, -1, PREG_SPLIT_NO_EMPTY);
                 })
             ->end()
             ->prototype('scalar')->end()

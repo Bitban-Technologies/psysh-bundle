@@ -11,9 +11,7 @@ use Symfony\Component\DependencyInjection\{
 
 class AddTabCompletionMatcherPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function process(ContainerBuilder $container)
     {
         if (!$container->has('psysh.shell')) {

@@ -16,6 +16,9 @@ use Symfony\Component\DependencyInjection\{
     Reference
 };
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
+use function is_string;
+use function strpos;
+use function substr;
 
 class Extension extends ConfigurableExtension
 {
@@ -28,9 +31,7 @@ class Extension extends ConfigurableExtension
         return 'psysh';
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
         $this->registerTags($container);
@@ -109,8 +110,8 @@ class Extension extends ConfigurableExtension
     private function scopeVariables(array $variables): array
     {
         foreach ($variables as &$spec) {
-            if (\is_string($spec) && 0 === \strpos($spec, '@')) {
-                $spec = new Reference(\substr($spec, 1));
+            if (is_string($spec) && 0 === strpos($spec, '@')) {
+                $spec = new Reference(substr($spec, 1));
             }
         }
 

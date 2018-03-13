@@ -15,9 +15,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class PsyshBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
@@ -27,9 +25,7 @@ class PsyshBundle extends Bundle
         $container->addCompilerPass(new SetVariablePass());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function getContainerExtension()
     {
         return $this->extension
