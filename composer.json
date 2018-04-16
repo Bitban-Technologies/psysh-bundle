@@ -37,7 +37,7 @@
   },
   "require": {
     "php": "7.1 - 7.3",
-    "psy/psysh": "0.8.17 - 0.9",
+    "psy/psysh": "^0.8.17|^0.9.1",
     "symfony/config": "^4.0",
     "symfony/dependency-injection": "^4.0",
     "symfony/http-kernel": "^4.0"
