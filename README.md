@@ -77,6 +77,6 @@ Some common options. For a more detailed list, see [wiki](https://github.com/bob
 | `require_semicolons`      | `bool`                                |
 | `startup_message`         | `string`                              |
 | `unicode`                 | `bool`                                |
-| `useTabCompletion`        | `bool`                                |
+| `use_tab_completion`      | `bool`                                |
 | `matchers`                | `array` [`string`]                    |
 | `variables`               | `array` [`string`]                    |
