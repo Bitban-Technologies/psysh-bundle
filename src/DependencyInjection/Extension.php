@@ -83,7 +83,7 @@ class Extension extends ConfigurableExtension
             }
         };
 
-        foreach (['commands', 'tabCompletionMatchers'] as $option) {
+        foreach (['commands', 'matchers'] as $option) {
             if (isset($config[$option])) {
                 $configurator($config[$option], $container);
                 unset($config[$option]);

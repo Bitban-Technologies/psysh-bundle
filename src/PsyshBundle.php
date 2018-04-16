@@ -5,7 +5,7 @@ namespace AlexMasterov\PsyshBundle;
 
 use AlexMasterov\PsyshBundle\DependencyInjection\{
     Compiler\AddCommandPass,
-    Compiler\AddTabCompletionMatcherPass,
+    Compiler\AddMatchersPass,
     Compiler\SetVariablePass,
     Extension
 };
@@ -21,7 +21,7 @@ class PsyshBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(new AddCommandPass());
-        $container->addCompilerPass(new AddTabCompletionMatcherPass());
+        $container->addCompilerPass(new AddMatchersPass());
         $container->addCompilerPass(new SetVariablePass());
     }
 

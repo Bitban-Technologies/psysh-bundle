@@ -32,8 +32,8 @@ final class ConfigurationTest extends TestCase
             'history_size'            => 50,
             'history_file'            => '/history',
             'manual_db_file'          => '/manual.sqlite',
-            'tab_completion'          => true,
-            'tab_completion_matchers' => [
+            'use_tab_completion'      => true,
+            'matchers' => [
                 'Psy\TabCompletion\Matcher\MongoClientMatcher',
                 'Psy\TabCompletion\Matcher\MongoDatabaseMatcher',
             ],
@@ -65,8 +65,8 @@ final class ConfigurationTest extends TestCase
             'historySize'           => 50,
             'historyFile'           => '/history',
             'manualDbFile'          => '/manual.sqlite',
-            'tabCompletion'         => true,
-            'tabCompletionMatchers' => [
+            'useTabCompletion'      => true,
+            'matchers' => [
                 'Psy\TabCompletion\Matcher\MongoClientMatcher',
                 'Psy\TabCompletion\Matcher\MongoDatabaseMatcher',
             ],

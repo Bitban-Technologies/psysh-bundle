@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\{
     Reference
 };
 
-class AddTabCompletionMatcherPass implements CompilerPassInterface
+class AddMatchersPass implements CompilerPassInterface
 {
     /** {@inheritdoc} */
     public function process(ContainerBuilder $container)
@@ -29,6 +29,6 @@ class AddTabCompletionMatcherPass implements CompilerPassInterface
         }
 
         $container->getDefinition('psysh.config')
-            ->addMethodCall('addTabCompletionMatchers', [$matchers]);
+            ->addMethodCall('addMatchers', [$matchers]);
     }
 }

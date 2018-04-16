@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace AlexMasterov\PsyshBundle\Tests\DependencyInjection\Compiler;
 
-use AlexMasterov\PsyshBundle\DependencyInjection\Compiler\AddTabCompletionMatcherPass;
+use AlexMasterov\PsyshBundle\DependencyInjection\Compiler\AddMatchersPass;
 use AlexMasterov\PsyshBundle\Tests\DependencyInjection\CanContainer;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-final class AddTabCompletionMatcherPassTest extends TestCase
+final class AddMatchersPassTest extends TestCase
 {
     use CanContainer;
 
@@ -22,7 +22,7 @@ final class AddTabCompletionMatcherPassTest extends TestCase
         $container->compile();
 
         // Verify
-        self::assertFalse($this->hasAddTabCompletionMatchersCall($container));
+        self::assertFalse($this->hasAddMatchersCall($container));
     }
 
     /** @test */
@@ -36,7 +36,7 @@ final class AddTabCompletionMatcherPassTest extends TestCase
         $container->compile();
 
         // Verify
-        self::assertFalse($this->hasAddTabCompletionMatchersCall($container));
+        self::assertFalse($this->hasAddMatchersCall($container));
     }
 
     /** @test */
@@ -55,26 +55,26 @@ final class AddTabCompletionMatcherPassTest extends TestCase
         $container->compile();
 
         // Verify
-        self::assertTrue($this->hasAddTabCompletionMatchersCall($container));
+        self::assertTrue($this->hasAddMatchersCall($container));
         self::assertContains($matcher, $this->getMatchers($container));
     }
 
     private function getContainer()
     {
         $container = $this->container();
-        $container->addCompilerPass(new AddTabCompletionMatcherPass());
+        $container->addCompilerPass(new AddMatchersPass());
 
         return $container;
     }
 
-    private function hasAddTabCompletionMatchersCall($container): bool
+    private function hasAddMatchersCall($container): bool
     {
-        return $this->hasDefinitionMethodCall('psysh.config', 'addTabCompletionMatchers', $container);
+        return $this->hasDefinitionMethodCall('psysh.config', 'addMatchers', $container);
     }
 
     private function getMatchers($container): array
     {
-        $matchers = $this->getDefinitionMethodArguments('psysh.config', 'addTabCompletionMatchers', $container);
+        $matchers = $this->getDefinitionMethodArguments('psysh.config', 'addMatchers', $container);
 
         return array_map(
             static function ($matcher) {
