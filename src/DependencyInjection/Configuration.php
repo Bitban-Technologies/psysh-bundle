@@ -10,8 +10,13 @@ use Symfony\Component\Config\Definition\{
     Exception\InvalidConfigurationException
 };
 use function array_filter;
+use function array_reduce;
+use function constant;
+use function defined;
+use function implode;
 use function lcfirst;
 use function preg_split;
+use function sprintf;
 use function str_replace;
 use function strtolower;
 use function ucwords;
@@ -115,19 +120,19 @@ class Configuration implements ConfigurationInterface
             ->validate()
                 ->always()
                 ->then(static function ($methods) {
-                    $invalidMethods = \array_filter($methods, static function ($method) {
-                        return false === \defined("E_{$method}");
+                    $invalidMethods = array_filter($methods, static function ($method) {
+                        return false === defined("E_{$method}");
                     });
 
                     if (empty($invalidMethods)) {
-                        return \array_reduce($methods, static function ($level, $method) {
-                            return $level |= \constant("E_{$method}");
+                        return array_reduce($methods, static function ($level, $method) {
+                            return $level |= constant("E_{$method}");
                         });
                     }
 
-                    throw new InvalidConfigurationException(\sprintf(
+                    throw new InvalidConfigurationException(sprintf(
                         'The errors are not supported: "%s".',
-                        \implode('", "', $invalidMethods)
+                        implode('", "', $invalidMethods)
                     ));
                 })
             ->end()
