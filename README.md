@@ -1,7 +1,6 @@
 ## PsyshBundle
 
 [![Latest Stable Version](https://poser.pugx.org/alexmasterov/psysh-bundle/v/stable)](https://packagist.org/packages/alexmasterov/psysh-bundle)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/AlexMasterov/psysh-bundle/master/LICENSE)
 [![Build Status](https://travis-ci.org/AlexMasterov/psysh-bundle.svg)](https://travis-ci.org/AlexMasterov/psysh-bundle)
 [![Code Coverage](https://scrutinizer-ci.com/g/AlexMasterov/psysh-bundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/AlexMasterov/psysh-bundle/?branch=master)
 [![Code Quality](https://scrutinizer-ci.com/g/AlexMasterov/psysh-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/AlexMasterov/psysh-bundle/?branch=master)
@@ -54,7 +53,6 @@ $ php bin/console psysh:shell
 >>> ls
 Variables: $someController, $mail, $someService, $db
 ```
-_WIP_...
 
 ## Configuration
 Some common options. For a more detailed list, see [wiki](https://github.com/bobthecow/psysh/wiki/Config-options).
@@ -80,3 +78,6 @@ Some common options. For a more detailed list, see [wiki](https://github.com/bob
 | `use_tab_completion`      | `bool`                                |
 | `matchers`                | `array` [`string`]                    |
 | `variables`               | `array` [`string`]                    |
+
+## License
+[MIT](LICENSE)

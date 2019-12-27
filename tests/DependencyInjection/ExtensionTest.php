@@ -17,6 +17,8 @@ final class ExtensionTest extends TestCase
     /** @test */
     public function it_valid_register(): void
     {
+        static $SERVICE_NAME = 'psysh.shell';
+
         // Stub
         $config = [
             'variables' => [
@@ -34,12 +36,15 @@ final class ExtensionTest extends TestCase
         $container = $this->loadExtension($config);
 
         // Verify
-        self::assertTrue($container->has('psysh.shell'));
-        self::assertInstanceOf(Shell::class, $container->get('psysh.shell'));
-        self::assertArraySubset(
-            array_keys($config['variables']),
-            $container->get('psysh.shell')->getScopeVariableNames()
-        );
+        self::assertTrue($container->has($SERVICE_NAME));
+
+        $shell = $container->get($SERVICE_NAME);
+        self::assertInstanceOf(Shell::class, $shell);
+
+        $scopeVariables = $shell->getScopeVariableNames();
+        foreach (array_keys($config['variables']) as $variable) {
+            self::assertContains($variable, $scopeVariables);
+        }
     }
 
     private function loadExtension(array $config = [], ContainerBuilder $container = null): ContainerBuilder

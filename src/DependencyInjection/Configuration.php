@@ -26,8 +26,8 @@ class Configuration implements ConfigurationInterface
     /** {@inheritdoc} */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('psysh');
+        $treeBuilder = new TreeBuilder('psysh');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
