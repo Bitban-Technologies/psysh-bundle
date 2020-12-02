@@ -1,5 +1,5 @@
 {
-  "name": "alexmasterov/psysh-bundle",
+  "name": "bitban/psysh-bundle",
   "description": "Bundle to integrate REPL PsySH with Symfony projects",
   "type": "symfony-bundle",
   "license": "MIT",
